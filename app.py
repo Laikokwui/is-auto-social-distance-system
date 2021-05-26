@@ -10,6 +10,13 @@ import wget
 from PIL import Image
 import pandas as pd
 import csv
+import plotly.express as px
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
+import matplotlib.pyplot as plt
+import time
+import plotly.figure_factory as ff
+
 
 
 #DB
@@ -90,6 +97,10 @@ def load_image(image_file):
 
 
 def main():
+    
+    f = open("data.csv", "w")
+    f.truncate()
+    f.close()
 
     sidebar = st.sidebar.selectbox('Choose one of the following', ('Welcome', 'Add an Image','Add a Video','View All File','Image Analysis', 'Real Time Video Analysis'))
 
@@ -184,18 +195,13 @@ def view_all_file():
 
 def image_analysis():
     st.title('Real Time Social Distancing Monitor System with Image')
-    cuda = st.selectbox('NVIDIA CUDA GPU should be used?', ('True', 'False'))
-
     st.subheader('Test Demo image')
     all_titles = [i[0] for i in view_by_image_author()]
     option = st.selectbox('Your Name', all_titles)
     all_path = [i[0] for i in get_path_by_image_author(option)]
     option2 = st.selectbox("Select your uploaded file", all_path)
 
-
-    USE_GPU = bool(cuda)
     MIN_DISTANCE = 50
-
 
     labelsPath = "yolo-coco/coco.names"
     LABELS = open(labelsPath).read().strip().split("\n")
@@ -204,13 +210,6 @@ def image_analysis():
 
 
     net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
-
-
-    if USE_GPU:
-
-        st.info("[INFO] setting preferable backend and target to CUDA...")
-        net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
-        net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
         
 
     ln = net.getLayerNames()
@@ -288,16 +287,14 @@ def image_analysis():
 
 def video_analysis():
     st.title('Real Time Social Distancing Monitor System with Video')
-    cuda = st.selectbox('NVIDIA CUDA GPU should be used?', ('True', 'False'))
 
-    st.subheader('Test Demo Video Or Try Live Detection')
+    st.subheader('Test Demo Video')
     all_titles = [i[0] for i in view_by_video_author()]
     option = st.selectbox('Your Name', all_titles)
     all_path = [i[0] for i in get_path_by_video_author(option)]
     option2 = st.selectbox("Select your uploaded file", all_path)
 
 
-    USE_GPU = bool(cuda)
     MIN_DISTANCE = 50
 
 
@@ -306,23 +303,26 @@ def video_analysis():
     weightsPath = "yolo-coco/yolov4.weights"
     configPath = "yolo-coco/yolov4.cfg"
 
+    header = ['time(seconds)','violate_count']
+
+
+    with open('data.csv', 'a') as f:
+        writer_csv = csv.writer(f)
+        writer_csv.writerow(header)
+        f.close()
+
     
 
 
     net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
-
-
-    if USE_GPU:
-
-        st.info("[INFO] setting preferable backend and target to CUDA...")
-        net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
-        net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
+    graph_text = st.write("The graph wil auto generate with a time interval of 3 seconds")
 
 
     ln = net.getLayerNames()
     ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
     if st.button('Start'):
+        start = time.time()
 
         st.info("[INFO] loading YOLO from disk...")
         st.info("[INFO] accessing video stream...")
@@ -383,29 +383,29 @@ def video_analysis():
 
 
             count_violate = str(len(violate))
-            st.write(count_violate)
+            count_datet = str(datetime.datetime.now().strftime('%M:%S.%f')[:-4])
 
 
-            count_datet = str(datetime.datetime.now())
-            st.write(count_datet)
 
             count_violate_list = []
             count_datet_list = []
 
-
-            
             count_violate_list.append(count_violate)
 
+            end = time.time()
+            difference = (end - start)            
+            count_datet_list.append(difference)
+
             
-            count_datet_list.append(count_datet)
+
+            
 
             with open('data.csv', 'a') as f:
                     writer_csv = csv.writer(f)
                     writer_csv.writerows(zip(count_datet_list,count_violate_list))
-                    f.close()
+                    f.close()     
 
-
-
+            
             display = 1
             if display > 0:
 
@@ -414,6 +414,29 @@ def video_analysis():
 
             if writer is not None:
                 writer.write(frame)
+
+            
+            DATA_URL=('data.csv')
+            @st.cache(persist=True)
+            def load_data():
+                data=pd.read_csv(DATA_URL)
+                return data
+
+            df = pd.read_csv(DATA_URL)
+
+            linechart = st.line_chart(df)
+
+            countdown = st.text('Countdown: 3')
+            time.sleep(1)
+            countdown.empty()
+            countdown = st.text('Countdown: 2')
+            time.sleep(1)
+            countdown.empty()
+            countdown = st.text('Countdown: 1')
+            time.sleep(1)
+            countdown.empty()
+            linechart.empty()
+
 
     st.success("Design & Developed By AI4Life")
 
