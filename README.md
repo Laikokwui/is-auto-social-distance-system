@@ -12,8 +12,11 @@
 </p>
 
 <!-- ABOUT THE PROJECT -->
+## YOLOv4 
+YOLO on the other hand, stands for You Only Looks Once is an efficient and optimised object detection algorithm that fused several processes of object detection into one neural network for both classification and prediction of bounding boxes for detected objects to allow a faster object detection processes. OpenCV on the other hand is mainly used for processing the images or videos input to ease and allow the object detection alogorithm to work correctly.
 
-### Built With
+
+## Built With
 
 Frontend
 
