@@ -6,7 +6,7 @@
   </a>
   <h3 align="center">Real-Time Social Distance Monitoring System</h3>
   <p align="center">
-    By Team IS4Life
+    By Team AI4Life
     
   </p>
 </p>
