@@ -8,6 +8,7 @@ import os
 import datetime
 import wget
 from PIL import Image
+import pandas as pd
 
 
 #DB
@@ -60,6 +61,14 @@ def get_path_by_image_author(author):
     c.execute('SELECT path FROM imagetable WHERE author="{}"'.format(author))
     data = c.fetchall()
     return data
+
+def delete_image(path):
+    c.execute('DELETE FROM imagetable WHERE path="{}"'.format(path))
+    conn.commit()
+
+def delete_video(path):
+    c.execute('DELETE FROM videotable WHERE path="{}"'.format(path))
+    conn.commit()
 
 
 # save & upload helper function
@@ -144,11 +153,31 @@ def add_a_video():
 def view_all_file():
     st.header("View All Files")
     images = view_all_images()
-    videos = view_all_videos()
+    
+    image_db = pd.DataFrame(images, columns=["Author", "Title","Created Date","File Path"])
     st.subheader("Image Database")
-    st.write(images)
+    st.dataframe(image_db)
+    all_images = [i[0] for i in view_by_image_author()]
+    image_option_1 = st.selectbox('Your Name for Image', all_images)
+    all_path = [i[0] for i in get_path_by_image_author(image_option_1)]
+    image_option_2 = st.selectbox("Select your uploaded image", all_path)
+    if st.button("Delete Image"):
+        delete_image(image_option_2)
+        st.warning("Deleted: '{}'".format(image_option_2))
+    
+    videos = view_all_videos()
     st.subheader("Video Database")
-    st.write(videos)
+    video_db = pd.DataFrame(videos, columns=["Author", "Title","Created Date","File Path"])
+    st.dataframe(video_db)
+    all_videos = [i[0] for i in view_by_video_author()]
+    video_option_1 = st.selectbox('Your Name for Video', all_videos)
+    all_video_path = [i[0] for i in get_path_by_video_author(video_option_1)]
+    video_option_2 = st.selectbox("Select your uploaded video", all_video_path)
+    if st.button("Delete Video"):
+        delete_video(video_option_2)
+        st.warning("Deleted: '{}'".format(video_option_2))
+
+    
 
 def image_analysis():
     st.title('Real Time Social Distancing Monitor System with Image')
