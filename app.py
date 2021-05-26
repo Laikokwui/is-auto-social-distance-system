@@ -423,8 +423,10 @@ def video_analysis():
                 return data
 
             df = pd.read_csv(DATA_URL)
-
+            
+            chart_caption = st.text('Line chart of violated quantity & time in (s)')
             linechart = st.line_chart(df)
+            
 
             countdown = st.text('Countdown: 3')
             time.sleep(1)
@@ -436,6 +438,7 @@ def video_analysis():
             time.sleep(1)
             countdown.empty()
             linechart.empty()
+            chart_caption.empty()
 
 
     st.success("Design & Developed By AI4Life")
