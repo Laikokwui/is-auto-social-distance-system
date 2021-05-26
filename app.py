@@ -9,6 +9,7 @@ import datetime
 import wget
 from PIL import Image
 import pandas as pd
+import csv
 
 
 #DB
@@ -305,6 +306,8 @@ def video_analysis():
     weightsPath = "yolo-coco/yolov4.weights"
     configPath = "yolo-coco/yolov4.cfg"
 
+    
+
 
     net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
 
@@ -377,6 +380,31 @@ def video_analysis():
             text = "Social Distancing Violations: {}".format(len(violate))
             cv2.putText(frame, text, (10, frame.shape[0] - 25),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.85, (0, 0, 255), 3)
+
+
+            count_violate = str(len(violate))
+            st.write(count_violate)
+
+
+            count_datet = str(datetime.datetime.now())
+            st.write(count_datet)
+
+            count_violate_list = []
+            count_datet_list = []
+
+
+            
+            count_violate_list.append(count_violate)
+
+            
+            count_datet_list.append(count_datet)
+
+            with open('data.csv', 'a') as f:
+                    writer_csv = csv.writer(f)
+                    writer_csv.writerows(zip(count_datet_list,count_violate_list))
+                    f.close()
+
+
 
             display = 1
             if display > 0:
