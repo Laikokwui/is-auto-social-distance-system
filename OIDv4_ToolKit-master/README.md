@@ -74,7 +74,7 @@ Python is required.
 
 1. Download the file and place in the OIDv4_toolKit parent directory
 
-    [oid_to_pascal_voc_xml.py](https://gist.github.com/nilsfed/1dbf1cf397db50c90705daa6a81a8dec) 
+    Link: [oid_to_pascal_voc_xml.py](https://gist.github.com/nilsfed/1dbf1cf397db50c90705daa6a81a8dec) 
     
 2. Run the following command
 
