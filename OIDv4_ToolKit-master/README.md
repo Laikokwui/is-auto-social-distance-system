@@ -31,7 +31,7 @@ Python is required.
     - **--limit**: Limit the number of dataset to be downloaded
     
     
-    The algorith will take care to download all the necessary files and build the directory structure like this:
+    The algorithm will take care to download all the necessary files and build the directory structure like this:
 
     ```
     main_folder
