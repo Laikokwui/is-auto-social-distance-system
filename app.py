@@ -98,10 +98,12 @@ def main():
 
 
 def welcome():
-    st.title("Automated Social Distancing Monitoring System")
-    st.subheader(' Our group name or Introduction')
-    st.text(' Test')
-    # st.image('',use_column_width=True) our logo
+    st.title("Automated Social Distancing Monitoring System by AI4Life")
+    st.subheader('Team members:')
+    st.text('1. Lai Kok Wui (101211447)\n2. Lee Zhe Sheng (10215371)\n3. Didier Luther Ho Chih-Yuan (101214093)\n4. Abraham Tan Chiun Wu (101213825)')
+
+    st.subheader('A0 Poster for AI4LIFE video presentation')
+    st.image('images/poster.jpg',use_column_width=True)
 
 def add_an_image():
     st.title("Upload an image")
@@ -179,7 +181,7 @@ def image_analysis():
         st.info("[INFO] setting preferable backend and target to CUDA...")
         net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
         net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
-
+        
 
     ln = net.getLayerNames()
     ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
