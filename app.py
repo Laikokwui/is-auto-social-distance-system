@@ -195,12 +195,16 @@ def view_all_file():
 
 def image_analysis():
     st.title('Real Time Social Distancing Monitor System with Image')
+    cuda = st.selectbox('NVIDIA CUDA GPU should be used?', ('True', 'False'))
+
     st.subheader('Test Demo image')
     all_titles = [i[0] for i in view_by_image_author()]
     option = st.selectbox('Your Name', all_titles)
     all_path = [i[0] for i in get_path_by_image_author(option)]
     option2 = st.selectbox("Select your uploaded file", all_path)
 
+    
+    USE_GPU = bool(cuda)
     MIN_DISTANCE = 50
 
     labelsPath = "yolo-coco/coco.names"
@@ -210,6 +214,11 @@ def image_analysis():
 
 
     net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
+    
+    if USE_GPU:
+        st.info("[INFO] setting preferable backend and target to CUDA...")
+        net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+        net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
         
 
     ln = net.getLayerNames()
@@ -288,6 +297,8 @@ def image_analysis():
 def video_analysis():
     st.title('Real Time Social Distancing Monitor System with Video')
 
+    cuda = st.selectbox('NVIDIA CUDA GPU should be used?', ('True', 'False'))
+
     st.subheader('Test Demo Video')
     all_titles = [i[0] for i in view_by_video_author()]
     option = st.selectbox('Your Name', all_titles)
@@ -295,6 +306,7 @@ def video_analysis():
     option2 = st.selectbox("Select your uploaded file", all_path)
 
 
+    USE_GPU = bool(cuda)
     MIN_DISTANCE = 50
 
 
@@ -303,19 +315,25 @@ def video_analysis():
     weightsPath = "yolo-coco/yolov4.weights"
     configPath = "yolo-coco/yolov4.cfg"
 
+    # Create a header for CSV file for category
     header = ['time(seconds)','violate_count']
 
 
+    #CSV open and amend CSV file
     with open('data.csv', 'a') as f:
         writer_csv = csv.writer(f)
         writer_csv.writerow(header)
         f.close()
 
-    
-
-
     net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
-    graph_text = st.write("The graph wil auto generate with a time interval of 3 seconds")
+    
+    if USE_GPU:
+        st.info("[INFO] setting preferable backend and target to CUDA...")
+        net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
+        net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
+
+    
+    st.write("The graph wil auto generate with a time interval of 3 seconds")
 
 
     ln = net.getLayerNames()
